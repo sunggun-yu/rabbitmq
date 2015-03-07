@@ -46,6 +46,10 @@ default['rabbitmq']['cluster_disk_nodes'] = []
 default['rabbitmq']['erlang_cookie'] = 'AnyAlphaNumericStringWillDo'
 default['rabbitmq']['cluster_partition_handling'] = 'ignore'
 
+default[:rabbitmq][:clustering][:use_auto_clustering] = false
+default[:rabbitmq][:clustering][:cluster_name] = nil
+default[:rabbitmq][:clustering][:cluster_nodes] = []
+
 # Manual clustering
 # - Node type : master | slave
 default['rabbitmq']['clustering']['node_type'] = 'master'

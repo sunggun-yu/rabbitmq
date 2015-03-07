@@ -20,5 +20,5 @@
 
 actions :join, :change_cluster_node_type
 
-attribute :master_node_name,      :kind_of => String, name_attribute: true  # master node name to join
-attribute :cluster_node_type,     :kind_of => String                        # disc|ram
+attribute :cluster_nodes, :kind_of => String, name_attribute: true  # first node name to join
+attribute :cluster_name,  :kind_of => String                        # cluster name

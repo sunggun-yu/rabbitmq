@@ -20,15 +20,19 @@
 
 include_recipe 'rabbitmq::default'
 
-# Join in cluster : master node will be skipped.
-if node[:rabbitmq][:clustering][:node_type] == 'slave'
-  rabbitmq_cluster node[:rabbitmq][:clustering][:master_node_name] do
-    action :join
-  end
-end
+if node[:rabbitmq][:cluster]
+  if node[:rabbitmq][:clustering][:use_auto_clustering]
+    # Do auto clustering
+  else # Do Manual clustering
+    # Join in cluster
+    rabbitmq_cluster "#{node[:rabbitmq][:clustering][:cluster_nodes]}" do
+      cluster_name "#{node[:rabbitmq][:clustering][:cluster_name]}"
+      action :join
+    end
 
-# Change the cluster node type : master node will be skipped. (for now)
-rabbitmq_cluster node[:rabbitmq][:clustering][:master_node_name] do
-  cluster_node_type node[:rabbitmq][:clustering][:cluster_node_type]
-  action :change_cluster_node_type
+    # Change the cluster node type
+    rabbitmq_cluster "#{node[:rabbitmq][:clustering][:cluster_nodes]}" do
+      action :change_cluster_node_type
+    end
+  end
 end
