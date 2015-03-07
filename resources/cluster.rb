@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-actions :join, :change_cluster_node_type
+actions :join, :set_cluster_name, :change_cluster_node_type
 
 attribute :cluster_nodes, :kind_of => String, name_attribute: true  # first node name to join
 attribute :cluster_name,  :kind_of => String                        # cluster name

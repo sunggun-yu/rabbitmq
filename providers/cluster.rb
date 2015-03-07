@@ -193,11 +193,7 @@ action :join do
   _cluster_name =  new_resource.cluster_name.nil? || new_resource.cluster_name.empty? ? _node_name_to_join : new_resource.cluster_name
 
   if _node_name == _node_name_to_join
-    # Set cluster name if node is first node of cluster
-    unless new_resource.cluster_name.empty?
-      run_rabbitmqctl("set_cluster_name #{new_resource.cluster_name}")
-      Chef::Log.info("[rabbitmq_cluster] Cluster name has been set to #{current_cluster_name(cluster_status)}")
-    end
+    Chef::Log.warn('[rabbitmq_cluster] Trying to join cluster node itself. Joining cluster will be skipped.')
   elsif current_cluster_name(_cluster_status) == _cluster_name && joined_cluster?(_node_name_to_join, _cluster_status)
     Chef::Log.warn("[rabbitmq_cluster] Node is already member of #{_cluster_name} and joined in #{_node_name_to_join}. Joining cluster will be skipped.")
   else
@@ -206,6 +202,19 @@ action :join do
     run_rabbitmqctl('start_app')
     Chef::Log.info("[rabbitmq_cluster] Node #{_node_name} joined in #{_node_name_to_join}")
     Chef::Log.info("#{cluster_status}")
+  end
+end
+
+# Action for set cluster name
+action :set_cluster_name do
+  Chef::Application.fatal!('rabbitmq_cluster with action :join requires a non-nil/empty cluster_nodes.') if new_resource.cluster_nodes.nil? || new_resource.cluster_nodes.empty?
+  _cluster_status = cluster_status
+  _cluster_name = new_resource.cluster_name
+  unless current_cluster_name(_cluster_status) == _cluster_name
+    unless _cluster_name.empty?
+      run_rabbitmqctl("set_cluster_name #{_cluster_name}")
+      Chef::Log.info("[rabbitmq_cluster] Cluster name has been set : #{current_cluster_name(cluster_status)}")
+    end
   end
 end
 
