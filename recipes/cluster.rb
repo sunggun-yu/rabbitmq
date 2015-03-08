@@ -21,24 +21,21 @@
 include_recipe 'rabbitmq::default'
 
 if node[:rabbitmq][:cluster]
-  if node[:rabbitmq][:clustering][:use_auto_clustering]
-    # Do auto clustering
-  else # Do Manual clustering
+  # Manual clustering
+  unless node[:rabbitmq][:clustering][:use_auto_clustering]
     # Join in cluster
     rabbitmq_cluster "#{node[:rabbitmq][:clustering][:cluster_nodes]}" do
       cluster_name "#{node[:rabbitmq][:clustering][:cluster_name]}"
       action :join
     end
-
-    # Set cluster name : It will be skipped once same cluster name has been set in the cluster of current node.
-    rabbitmq_cluster "#{node[:rabbitmq][:clustering][:cluster_nodes]}" do
-      cluster_name "#{node[:rabbitmq][:clustering][:cluster_name]}"
-      action :set_cluster_name
-    end
-
-    # Change the cluster node type
-    rabbitmq_cluster "#{node[:rabbitmq][:clustering][:cluster_nodes]}" do
-      action :change_cluster_node_type
-    end
+  end
+  # Set cluster name : It will be skipped once same cluster name has been set in the cluster.
+  rabbitmq_cluster "#{node[:rabbitmq][:clustering][:cluster_nodes]}" do
+    cluster_name "#{node[:rabbitmq][:clustering][:cluster_name]}"
+    action :set_cluster_name
+  end
+  # Change the cluster node type
+  rabbitmq_cluster "#{node[:rabbitmq][:clustering][:cluster_nodes]}" do
+    action :change_cluster_node_type
   end
 end
